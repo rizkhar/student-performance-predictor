@@ -137,10 +137,10 @@ if submitted:
 
     # --- REKOMENDASI ---
     st.subheader("Rekomendasi")
-    if hours_studied < 25: st.warning("Belajar ≥25 jam")
-    if attendance < 80: st.warning("Kehadiran ≥80%")
+    if hours_studied < 25: st.warning("Tingkatkan jam belajar ≥25 jam")
+    if attendance < 80: st.warning("Tingkatkan kehadiran ≥80%")
     if sleep_hours < 7: st.warning("Tidur ≥8 jam")
     if physical_activity < 3: st.warning("Olahraga ≥3x")
     if previous_scores < 85: st.warning("Nilai sebelumnya < 85")
-    if motivation_level == 'Low': st.warning("Motivasi rendah")
-    if parental_involvement == 'Low': st.warning("Kurang keterlibatan orangtua")
+    if motivation_level == 'Low': st.warning("Tingkatkan motivasi")
+    if parental_involvement == 'Low': st.warning("Lebih libatkan orangtua")
