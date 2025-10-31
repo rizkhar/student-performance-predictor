@@ -4,7 +4,7 @@
 Akurasi: **90.2%** (Random Forest)
 
 ## Demo
-
+https://student-performance-predictor-mlmodel.streamlit.app/
 
 ## Fitur
 - Pilih model: **Random Forest** atau **Logistic Regression**
@@ -17,4 +17,5 @@ Akurasi: **90.2%** (Random Forest)
 3. Dapatkan hasil + saran
 
 ---
+
 *Proyek ini bisa tingkatkan kelulusan 7% di sekolah Anda.*
