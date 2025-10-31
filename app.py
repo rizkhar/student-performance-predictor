@@ -109,9 +109,9 @@ if submitted:
     # Output
     st.subheader("Hasil")
     if pred == 'Above Threshold':
-        st.success(f"LULUS | Peluang: {prob:.1%}")
+        st.success(f"LULUS (capaian nilai di atas passing grade) | Peluang: {prob:.1%}")
     else:
-        st.error(f"RISIKO GAGAL | Peluang: {prob:.1%}")
+        st.error(f"RISIKO GAGAL (capaian nilai di bawah passing grade)| Peluang: {prob:.1%}")
 
     st.subheader("Rekomendasi")
     if sleep_hours < 7: st.warning("Tidur 7 jam")
