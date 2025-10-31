@@ -53,7 +53,7 @@ dummy_data = [low, high]
 dummy_df = pd.DataFrame(dummy_data)
 
 preprocessor = create_preprocessor()
-preprocessor.fit(dummy)
+preprocessor.fit(dummy_df)
 
 # --- UI ---
 st.set_page_config(page_title="Student Success Predictor", page_icon="Graduation Cap", layout="wide")
