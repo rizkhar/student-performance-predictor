@@ -32,16 +32,26 @@ def create_preprocessor():
     ], sparse_threshold=0)
 
 # Dummy data untuk fit (agar semua kategori terdeteksi)
-dummy = pd.DataFrame([
-    {col: 'Low' if col in ['Parental_Involvement', 'Motivation_Level'] else 
-          'Negative' if col == 'Peer_Influence' else 
-          'No' if col in ['Internet_Access', 'Extracurricular_Activities'] else 0
-     for col in cat_cols + num_cols},
-    {col: 'High' if col in ['Parental_Involvement', 'Motivation_Level'] else 
-          'Positive' if col == 'Peer_Influence' else 
-          'Yes' if col in ['Internet_Access', 'Extracurricular_Activities'] else 100
-     for col in cat_cols + num_cols}
-])
+dummy_data = []
+# semua nilai rendah
+low = {
+    'Hours_Studied': 1, 'Attendance': 50, 'Sleep_Hours': 4,
+    'Physical_Activity': 0, 'Previous_Scores': 50, 'Tutoring_Sessions': 0,
+    'Parental_Involvement': 'Low', 'Motivation_Level': 'Low',
+    'Peer_Influence': 'Negative', 'Internet_Access': 'No',
+    'Extracurricular_Activities': 'No'
+}
+# semua nilai tinggi
+high = {
+    'Hours_Studied': 30, 'Attendance': 100, 'Sleep_Hours': 9,
+    'Physical_Activity': 6, 'Previous_Scores': 95, 'Tutoring_Sessions': 4,
+    'Parental_Involvement': 'High', 'Motivation_Level': 'High',
+    'Peer_Influence': 'Positive', 'Internet_Access': 'Yes',
+    'Extracurricular_Activities': 'Yes'
+}
+dummy_data = [low, high]
+dummy_df = pd.DataFrame(dummy_data)
+
 preprocessor = create_preprocessor()
 preprocessor.fit(dummy)
 
