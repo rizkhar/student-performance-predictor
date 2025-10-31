@@ -88,8 +88,8 @@ if submitted:
     if physical_activity >= 3: score += 1
     if previous_scores >= 70: score += 2
     if tutoring_sessions >= 2: score += 1
-    if parental_involvement == ['Medium','High]: score += 1
-    if motivation_level == ['Medium','High]: score += 2
+    if parental_involvement == ['Medium','High']: score += 1
+    if motivation_level == ['Medium','High']: score += 2
     if peer_influence == 'Positive': score += 1
     if internet_access == 'Yes': score += 1
     if extracurricular_activities == 'Yes': score += 1
