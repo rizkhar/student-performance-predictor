@@ -143,4 +143,4 @@ if submitted:
     if physical_activity < 3: st.warning("Olahraga ≥3x")
     if previous_scores < 85: st.warning("Nilai sebelumnya < 85")
     if motivation_level == 'Low': st.warning("Motivasi rendah")
-    if parental_involvement == 'Low' st.warning("Kurang keterlibatan orangtua")
+    if parental_involvement == 'Low': st.warning("Kurang keterlibatan orangtua")
