@@ -124,19 +124,15 @@ if submitted:
     # --- HASIL AKHIR ---
     st.subheader("Hasil Prediksi")
     if score >= 10:
-        st.success("LULUS")
+        st.success("LULUS (nilai di atas passing grade)")
         st.balloons()
-        st.info("**(nilai di atas passing grade)**")
     elif score <= 4:
-        st.error("TIDAK LULUS")
-        st.info("**(nilai di bawah passing grade)**")
+        st.error("RISIKO TIDAK LULUS (nilai di bawah passing grade)")
     else:
         if pred == 'Above Threshold':
-            st.success("LULUS")
-            st.info("**(nilai di atas passing grade)**")
+            st.success("LULUS (nilai di atas passing grade)")
         else:
-            st.error("TIDAK LULUS")
-            st.info("**(nilai di bawah passing grade)**")
+            st.error("RISIKO TIDAK LULUS (nilai di bawah passing grade)")
         st.caption(f"Model: {'LULUS' if pred == 'Above Threshold' else 'TIDAK LULUS'} | Skor: {score}/15")
 
     # --- REKOMENDASI ---
