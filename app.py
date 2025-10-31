@@ -141,6 +141,6 @@ if submitted:
     if attendance < 80: st.warning("Tingkatkan kehadiran ≥80%")
     if sleep_hours < 7: st.warning("Tidur ≥8 jam")
     if physical_activity < 3: st.warning("Olahraga ≥3x")
-    if previous_scores < 85: st.warning("Nilai sebelumnya < 85")
+    if tutoring_sessions <= 2 and previous_scores < 85: st.warning("Nilai sebelumnya < 85, ikuti program tutoring")
     if motivation_level == 'Low': st.warning("Tingkatkan motivasi")
     if parental_involvement == 'Low': st.warning("Lebih libatkan orangtua")
