@@ -7,7 +7,7 @@ from sklearn.compose import ColumnTransformer
 # --- LOAD MODEL ---
 @st.cache_resource
 def load_models():
-    try:
+    try: 
         with open('lr_model.pkl', 'rb') as f:
             lr = pickle.load(f)
         with open('rf_model.pkl', 'rb') as f:
