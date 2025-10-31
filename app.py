@@ -48,9 +48,9 @@ preprocessor = create_preprocessor()
 preprocessor.fit(dummy_df)
 
 # --- UI ---
-st.set_page_config(page_title="Prediksi Kelulusan", page_icon="Graduation Cap", layout="wide")
+st.set_page_config(page_title="Prediksi Performa Nilai Siswa", page_icon="Graduation Cap", layout="wide")
 st.title("Prediksi Kelulusan Siswa")
-st.markdown("**11 Fitur | Hanya 2 Hasil: LULUS / TIDAK LULUS**")
+st.markdown("**11 Indikator utuma berdasarkan Akademik & Gaya Hidup serta Lingkungan & Psikologis")
 st.markdown("""
 **Peringatan**:  
 Model menggunakan data dummy dan **SMOTE** (terdapat data sintesis) sehingga mungkin beberapa hasil prediksi kurang realistis.
