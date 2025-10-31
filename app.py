@@ -64,4 +64,86 @@ with st.form("input_form"):
         hours_studied = st.slider("Hours Studied", 1, 50, 23)
         attendance = st.slider("Attendance (%)", 50, 100, 84)
         sleep_hours = st.slider("Sleep Hours", 4, 10, 7)
-        physical_activity = st
+        physical_activity = st.slider("Physical Activity (0-6)", 0, 6, 3)
+        previous_scores = st.slider("Previous Scores", 50, 100, 73)
+        tutoring_sessions = st.slider("Tutoring Sessions", 0, 5, 1)
+    with col2:
+        st.markdown("**Lingkungan & Psikologis**")
+        parental_involvement = st.selectbox("Parental Involvement", ['Low', 'Medium', 'High'])
+        motivation_level = st.selectbox("Motivation Level", ['Low', 'Medium', 'High'])
+        peer_influence = st.selectbox("Peer Influence", ['Negative', 'Neutral', 'Positive'])
+        internet_access = st.selectbox("Internet Access", ['No', 'Yes'])
+        extracurricular_activities = st.selectbox("Extracurricular Activities", ['No', 'Yes'])
+    
+    model_choice = st.selectbox("Model", ["Random Forest", "Logistic Regression"])
+    submitted = st.form_submit_button("Prediksi")
+
+# --- PREDIKSI (DI LUAR FORM!) ---
+if submitted:
+    # --- HITUNG SKOR MANUAL ---
+    score = 0
+    if hours_studied >= 25: score += 2
+    if attendance >= 95: score += 2
+    if sleep_hours >= 8: score += 1
+    if physical_activity >= 5: score += 1
+    if previous_scores >= 85: score += 2
+    if tutoring_sessions >= 3: score += 1
+    if parental_involvement == 'High': score += 1
+    if motivation_level == 'High': score += 2
+    if peer_influence == 'Positive': score += 1
+    if internet_access == 'Yes': score += 1
+    if extracurricular_activities == 'Yes': score += 1
+
+    # --- INPUT DATAFRAME (URUTAN SAMA DENGAN DUMMY) ---
+    input_data = {
+        'Hours_Studied': hours_studied,
+        'Attendance': attendance,
+        'Sleep_Hours': sleep_hours,
+        'Physical_Activity': physical_activity,
+        'Previous_Scores': previous_scores,
+        'Tutoring_Sessions': tutoring_sessions,
+        'Parental_Involvement': parental_involvement,
+        'Motivation_Level': motivation_level,
+        'Peer_Influence': peer_influence,
+        'Internet_Access': internet_access,
+        'Extracurricular_Activities': extracurricular_activities
+    }
+    input_df = pd.DataFrame([input_data])
+    input_df = input_df[[
+        'Hours_Studied', 'Attendance', 'Sleep_Hours', 'Physical_Activity',
+        'Previous_Scores', 'Tutoring_Sessions',
+        'Parental_Involvement', 'Motivation_Level', 'Peer_Influence',
+        'Internet_Access', 'Extracurricular_Activities'
+    ]]
+
+    # --- TRANSFORM & PREDIKSI ---
+    X_input = preprocessor.transform(input_df)
+    model = rf if "Random Forest" in model_choice else lr
+    pred = model.predict(X_input)[0]
+
+    # --- HASIL AKHIR ---
+    st.subheader("Hasil Prediksi")
+    if score >= 10:
+        st.success("LULUS")
+        st.balloons()
+        st.info("**(nilai di atas passing grade)**")
+    elif score <= 4:
+        st.error("TIDAK LULUS")
+        st.info("**(nilai di bawah passing grade)**")
+    else:
+        if pred == 'Above Threshold':
+            st.success("LULUS")
+            st.info("**(nilai di atas passing grade)**")
+        else:
+            st.error("TIDAK LULUS")
+            st.info("**(nilai di bawah passing grade)**")
+        st.caption(f"Model: {'LULUS' if pred == 'Above Threshold' else 'TIDAK LULUS'} | Skor: {score}/15")
+
+    # --- REKOMENDASI ---
+    st.subheader("Rekomendasi")
+    if hours_studied < 25: st.warning("Belajar ≥25 jam")
+    if attendance < 95: st.warning("Kehadiran ≥95%")
+    if sleep_hours < 8: st.warning("Tidur ≥8 jam")
+    if physical_activity < 5: st.warning("Olahraga ≥5x")
+    if previous_scores < 85: st.warning("Skor ≥85")
+    if motivation_level != 'High': st.warning("Motivasi tinggi")
