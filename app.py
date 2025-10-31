@@ -83,13 +83,13 @@ if submitted:
     # --- HITUNG SKOR MANUAL ---
     score = 0
     if hours_studied >= 25: score += 2
-    if attendance >= 95: score += 2
-    if sleep_hours >= 8: score += 1
-    if physical_activity >= 5: score += 1
-    if previous_scores >= 85: score += 2
-    if tutoring_sessions >= 3: score += 1
-    if parental_involvement == 'High': score += 1
-    if motivation_level == 'High': score += 2
+    if attendance >= 80: score += 2
+    if sleep_hours >= 7: score += 1
+    if physical_activity >= 3: score += 1
+    if previous_scores >= 70: score += 2
+    if tutoring_sessions >= 2: score += 1
+    if parental_involvement == ['Medium','High]: score += 1
+    if motivation_level == ['Medium','High]: score += 2
     if peer_influence == 'Positive': score += 1
     if internet_access == 'Yes': score += 1
     if extracurricular_activities == 'Yes': score += 1
@@ -138,8 +138,9 @@ if submitted:
     # --- REKOMENDASI ---
     st.subheader("Rekomendasi")
     if hours_studied < 25: st.warning("Belajar ≥25 jam")
-    if attendance < 95: st.warning("Kehadiran ≥95%")
-    if sleep_hours < 8: st.warning("Tidur ≥8 jam")
-    if physical_activity < 5: st.warning("Olahraga ≥5x")
-    if previous_scores < 85: st.warning("Skor ≥85")
-    if motivation_level != 'High': st.warning("Motivasi tinggi")
+    if attendance < 80: st.warning("Kehadiran ≥80%")
+    if sleep_hours < 7: st.warning("Tidur ≥8 jam")
+    if physical_activity < 3: st.warning("Olahraga ≥3x")
+    if previous_scores < 85: st.warning("Nilai sebelumnya < 85")
+    if motivation_level == 'Low': st.warning("Motivasi rendah")
+    if parental_involvement == 'Low' st.warning("Kurang keterlibatan orangtua"
