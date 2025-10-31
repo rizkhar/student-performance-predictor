@@ -4,7 +4,7 @@ import pickle
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 
-# --- LOAD 2 MODEL SAJA ---
+# --- LOAD 2 MODEL ---
 @st.cache_resource
 def load_models():
     with open('lr_model.pkl', 'rb') as f:
@@ -15,8 +15,8 @@ def load_models():
 
 lr, rf = load_models()
 
-# --- BUAT PREPROCESSOR ULANG (SAMA DENGAN TRAINING) ---
-def create_preprocessor():
+# --- BUAT PREPROCESSOR + DUMMY DATA UNTUK FIT ---
+def create_preprocessor_with_fit():
     cat_cols = [
         'Parental_Involvement', 'Motivation_Level', 'Peer_Influence',
         'Internet_Access', 'Extracurricular_Activities'
@@ -25,15 +25,41 @@ def create_preprocessor():
         'Hours_Studied', 'Attendance', 'Sleep_Hours',
         'Physical_Activity', 'Previous_Scores', 'Tutoring_Sessions'
     ]
-    return ColumnTransformer([
+    
+    preprocessor = ColumnTransformer([
         ('cat', OneHotEncoder(drop='first', handle_unknown='ignore'), cat_cols),
         ('num', StandardScaler(), num_cols)
     ], sparse_threshold=0)
 
+    # Dummy data untuk fit
+    dummy_data = pd.DataFrame([
+        {
+            'Hours_Studied': 20, 'Attendance': 80, 'Sleep_Hours': 7,
+            'Physical_Activity': 3, 'Previous_Scores': 70, 'Tutoring_Sessions': 1,
+            'Parental_Involvement': 'Low', 'Motivation_Level': 'Low',
+            'Peer_Influence': 'Negative', 'Internet_Access': 'No',
+            'Extracurricular_Activities': 'No'
+        },
+        {
+            'Hours_Studied': 25, 'Attendance': 95, 'Sleep_Hours': 8,
+            'Physical_Activity': 5, 'Previous_Scores': 85, 'Tutoring_Sessions': 3,
+            'Parental_Involvement': 'High', 'Motivation_Level': 'High',
+            'Peer_Influence': 'Positive', 'Internet_Access': 'Yes',
+            'Extracurricular_Activities': 'Yes'
+        }
+    ])
+
+    # Fit di dummy agar encoder tahu semua kategori
+    preprocessor.fit(dummy_data)
+    return preprocessor
+
+# Load awal
+preprocessor = create_preprocessor_with_fit()
+
 # --- UI ---
 st.set_page_config(page_title="Student Predictor", page_icon="Graduation Cap", layout="wide")
 st.title("Student Success Predictor")
-st.markdown("**11 Fitur Terpilih** | Tanpa `preprocessor.pkl` | Akurasi RF: ~90%")
+st.markdown("**11 Fitur Terpilih** | Tanpa `preprocessor.pkl` | **FIXED**")
 
 model_choice = st.selectbox("Model", ["Random Forest", "Logistic Regression"])
 model = rf if "Random Forest" in model_choice else lr
@@ -58,7 +84,7 @@ with st.form("input_form"):
     submitted = st.form_submit_button("Prediksi")
 
 if submitted:
-    # Input DataFrame (11 fitur tepat)
+    # Input DataFrame
     input_df = pd.DataFrame({
         'Hours_Studied': [hours_studied],
         'Attendance': [attendance],
@@ -73,9 +99,8 @@ if submitted:
         'Extracurricular_Activities': [extracurricular_activities]
     })
 
-    # Preprocessing: Buat ulang & fit di input
-    preprocessor = create_preprocessor()
-    X_input = preprocessor.fit_transform(input_df)
+    # Transform (sudah difit di dummy)
+    X_input = preprocessor.transform(input_df)
 
     # Prediksi
     pred = model.predict(X_input)[0]
@@ -84,9 +109,9 @@ if submitted:
     # Output
     st.subheader("Hasil")
     if pred == 'Above Threshold':
-        st.success(f"LULUS (di atas passing grade) | Peluang: {prob:.1%}")
+        st.success(f"LULUS | Peluang: {prob:.1%}")
     else:
-        st.error(f"RISIKO GAGAL (risiko niali di bawah passing grade) | Peluang: {prob:.1%}")
+        st.error(f"RISIKO GAGAL | Peluang: {prob:.1%}")
 
     st.subheader("Rekomendasi")
     if sleep_hours < 7: st.warning("Tidur 7 jam")
