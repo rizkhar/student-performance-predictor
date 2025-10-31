@@ -4,7 +4,7 @@ import pickle
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 
-# --- LOAD MODEL ---
+# --- LOAD 2 MODEL SAJA ---
 @st.cache_resource
 def load_models():
     with open('lr_model.pkl', 'rb') as f:
@@ -15,72 +15,66 @@ def load_models():
 
 lr, rf = load_models()
 
-# --- PREPROCESSOR ---
+# --- BUAT PREPROCESSOR ULANG (SAMA DENGAN TRAINING) ---
 def create_preprocessor():
-    
     cat_cols = [
-        'Parental_Involvement', 'Access_to_Resources', 'Extracurricular_Activities',
-        'Motivation_Level', 'Internet_Access', 'Family_Income', 'Teacher_Quality',
-        'School_Type', 'Peer_Influence', 'Learning_Disabilities',
-        'Parental_Education_Level', 'Distance_from_Home', 'Gender'
+        'Parental_Involvement', 'Motivation_Level', 'Peer_Influence',
+        'Internet_Access', 'Extracurricular_Activities'
     ]
     num_cols = [
-        'Hours_Studied', 'Attendance', 'Sleep_Hours', 'Previous_Scores',
-        'Tutoring_Sessions', 'Physical_Activity'
+        'Hours_Studied', 'Attendance', 'Sleep_Hours',
+        'Physical_Activity', 'Previous_Scores', 'Tutoring_Sessions'
     ]
-    
-    preprocessor = ColumnTransformer([
+    return ColumnTransformer([
         ('cat', OneHotEncoder(drop='first', handle_unknown='ignore'), cat_cols),
         ('num', StandardScaler(), num_cols)
-    ])
-    return preprocessor
+    ], sparse_threshold=0)
 
-# --- APP UI ---
-st.set_page_config(page_title="Student Predictor", page_icon="Graduation Cap", layout="centered")
+# --- UI ---
+st.set_page_config(page_title="Student Predictor", page_icon="Graduation Cap", layout="wide")
 st.title("Student Success Predictor")
-st.markdown("**Prediksi LULUS / GAGAL** berdasarkan pola hidup. Pilih model:")
+st.markdown("**11 Fitur Terpilih** | Tanpa `preprocessor.pkl` | Akurasi RF: ~90%")
 
-model_choice = st.selectbox("Model", ["Random Forest (Lebih Akurat)", "Logistic Regression (Lebih Cepat)"])
+model_choice = st.selectbox("Model", ["Random Forest", "Logistic Regression"])
 model = rf if "Random Forest" in model_choice else lr
 
 # --- INPUT FORM ---
 with st.form("input_form"):
     col1, col2 = st.columns(2)
     with col1:
-        hours_studied = st.slider("Jam Belajar/Minggu", 1, 50, 23)
-        attendance = st.slider("Kehadiran (%)", 50, 100, 84)
-        sleep_hours = st.slider("Jam Tidur/Hari", 4, 10, 7)
+        hours_studied = st.slider("Hours_Studied", 1, 50, 23)
+        attendance = st.slider("Attendance (%)", 50, 100, 84)
+        sleep_hours = st.slider("Sleep_Hours", 4, 10, 7)
+        physical_activity = st.slider("Physical_Activity (0-6)", 0, 6, 3)
+        previous_scores = st.slider("Previous_Scores", 50, 100, 73)
+        tutoring_sessions = st.slider("Tutoring_Sessions", 0, 5, 1)
     with col2:
-        physical_activity = st.slider("Olahraga (0-6x/minggu)", 0, 6, 3)
-        motivation = st.selectbox("Motivasi", ['Low', 'Medium', 'High'])
-        previous_scores = st.slider("Skor Sebelumnya", 50, 100, 73)
-
-    # Default values (sama seperti training)
-    defaults = {
-        'Parental_Involvement': 'Medium', 'Access_to_Resources': 'Medium',
-        'Extracurricular_Activities': 'Yes', 'Internet_Access': 'Yes',
-        'Tutoring_Sessions': 1, 'Family_Income': 'Medium',
-        'Teacher_Quality': 'Medium', 'School_Type': 'Public',
-        'Peer_Influence': 'Neutral', 'Learning_Disabilities': 'No',
-        'Parental_Education_Level': 'College', 'Distance_from_Home': 'Near',
-        'Gender': 'Male'
-    }
-
+        parental_involvement = st.selectbox("Parental_Involvement", ['Low', 'Medium', 'High'])
+        motivation_level = st.selectbox("Motivation_Level", ['Low', 'Medium', 'High'])
+        peer_influence = st.selectbox("Peer_Influence", ['Negative', 'Neutral', 'Positive'])
+        internet_access = st.selectbox("Internet_Access", ['No', 'Yes'])
+        extracurricular_activities = st.selectbox("Extracurricular_Activities", ['No', 'Yes'])
+    
     submitted = st.form_submit_button("Prediksi")
 
 if submitted:
-    # Buat input DataFrame
-    input_dict = {
-        'Hours_Studied': hours_studied, 'Attendance': attendance,
-        'Sleep_Hours': sleep_hours, 'Previous_Scores': previous_scores,
-        'Physical_Activity': physical_activity, 'Motivation_Level': motivation,
-        **defaults
-    }
-    input_df = pd.DataFrame([input_dict])
+    # Input DataFrame (11 fitur tepat)
+    input_df = pd.DataFrame({
+        'Hours_Studied': [hours_studied],
+        'Attendance': [attendance],
+        'Sleep_Hours': [sleep_hours],
+        'Physical_Activity': [physical_activity],
+        'Previous_Scores': [previous_scores],
+        'Tutoring_Sessions': [tutoring_sessions],
+        'Parental_Involvement': [parental_involvement],
+        'Motivation_Level': [motivation_level],
+        'Peer_Influence': [peer_influence],
+        'Internet_Access': [internet_access],
+        'Extracurricular_Activities': [extracurricular_activities]
+    })
 
-    # Preprocessing langsung
+    # Preprocessing: Buat ulang & fit di input
     preprocessor = create_preprocessor()
-    # Fit di input
     X_input = preprocessor.fit_transform(input_df)
 
     # Prediksi
@@ -88,16 +82,15 @@ if submitted:
     prob = model.predict_proba(X_input)[0].max()
 
     # Output
-    st.subheader("Hasil Prediksi")
+    st.subheader("Hasil")
     if pred == 'Above Threshold':
-        st.success(f"LULUS | Peluang: {prob:.1%}")
+        st.success(f"LULUS (di atas passing grade) | Peluang: {prob:.1%}")
     else:
-        st.error(f"RISIKO TIDAK LULUS | Peluang: {prob:.1%}")
+        st.error(f"RISIKO GAGAL (risiko niali di bawah passing grade) | Peluang: {prob:.1%}")
 
     st.subheader("Rekomendasi")
-    if sleep_hours < 7:
-        st.warning("Tidur **7 jam/hari** → +12 poin")
-    if physical_activity < 3:
-        st.warning("Olahraga **≥3x/minggu** → 80% lulus")
-    if motivation == 'Low':
-        st.warning("Konseling motivasi → 3x peluang lulus")
+    if sleep_hours < 7: st.warning("Tidur 7 jam")
+    if physical_activity < 3: st.warning("Olahraga ≥3x/minggu")
+    if motivation_level == 'Low': st.warning("Konseling motivasi")
+    if attendance < 85: st.warning("Tingkatkan kehadiran")
+    if tutoring_sessions < 2: st.warning("Tambah sesi bimbingan")
