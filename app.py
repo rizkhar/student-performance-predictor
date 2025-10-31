@@ -120,7 +120,7 @@ if submitted:
     # --- OUTPUT ---
     st.subheader("Hasil Prediksi")
     if critical_risk:
-        st.error("**RISIKO GAGAL (nilai di bawah passing grade**")
+        st.error("**RISIKO GAGAL (nilai di bawah passing grade)**")
         st.info("Probabilitas lulus mungkin tinggi, **realita hanya 24.8% lulus**.")
     elif pred == 'Above Threshold':
         st.success(f"**LULUS (nilai di atas passing grade)** | Probabilitas lulus: {prob_lulus:.1%}")
