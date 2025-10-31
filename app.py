@@ -34,6 +34,13 @@ dummy_df = pd.DataFrame([
     {'Hours_Studied': 30, 'Attendance': 100, 'Sleep_Hours': 9, 'Physical_Activity': 6, 'Previous_Scores': 95, 'Tutoring_Sessions': 4,
      'Parental_Involvement': 'High', 'Motivation_Level': 'High', 'Peer_Influence': 'Positive', 'Internet_Access': 'Yes', 'Extracurricular_Activities': 'Yes'}
 ])
+
+dummy_df = dummy_df[[
+    'Hours_Studied', 'Attendance', 'Sleep_Hours', 'Physical_Activity',
+    'Previous_Scores', 'Tutoring_Sessions',
+    'Parental_Involvement', 'Motivation_Level', 'Peer_Influence',
+    'Internet_Access', 'Extracurricular_Activities'
+]]
 preprocessor = create_preprocessor()
 preprocessor.fit(dummy_df)
 
@@ -68,9 +75,9 @@ with st.form("input_form"):
     model_choice = st.selectbox("Model", ["Random Forest", "Logistic Regression"])
     submitted = st.form_submit_button("Prediksi")
 
-# --- PREDIKSI ---
-if submitted:
-    # --- HITUNG SKOR MANUAL (LOGIKA MANUSIA) ---
+    # --- PREDIKSI ---
+    if submitted:
+    # --- HITUNG SKOR MANUAL---
     score = 0
     if hours_studied >= 25: score += 2
     if attendance >= 95: score += 2
@@ -84,11 +91,31 @@ if submitted:
     if internet_access == 'Yes': score += 1
     if extracurricular_activities == 'Yes': score += 1
 
-    # --- PAKAI MODEL JIKA SKOR RENDAH ---
-    input_df = pd.DataFrame([{k: v for k, v in locals().items() if k in [
-        'Hours_Studied', 'Attendance', 'Sleep_Hours', 'Physical_Activity', 'Previous_Scores', 'Tutoring_Sessions',
-        'Parental_Involvement', 'Motivation_Level', 'Peer_Influence', 'Internet_Access', 'Extracurricular_Activities'
-    ]}], index=[0])
+    # --- UNTUK MODEL ---
+    input_data = {
+        'Hours_Studied': hours_studied,
+        'Attendance': attendance,
+        'Sleep_Hours': sleep_hours,
+        'Physical_Activity': physical_activity,
+        'Previous_Scores': previous_scores,
+        'Tutoring_Sessions': tutoring_sessions,
+        'Parental_Involvement': parental_involvement,
+        'Motivation_Level': motivation_level,
+        'Peer_Influence': peer_influence,
+        'Internet_Access': internet_access,
+        'Extracurricular_Activities': extracurricular_activities
+    }
+    
+    input_df = pd.DataFrame([input_data])
+
+    # PAKSA URUTAN KOLOM SAMA DENGAN DUMMY
+    input_df = input_df[[
+        'Hours_Studied', 'Attendance', 'Sleep_Hours', 'Physical_Activity',
+        'Previous_Scores', 'Tutoring_Sessions',
+        'Parental_Involvement', 'Motivation_Level', 'Peer_Influence',
+        'Internet_Access', 'Extracurricular_Activities'
+    ]]    
+    
     X_input = preprocessor.transform(input_df)
     model = rf if "Random Forest" in model_choice else lr
     pred = model.predict(X_input)[0]
