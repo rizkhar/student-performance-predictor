@@ -49,7 +49,7 @@ preprocessor.fit(dummy_df)
 
 # --- UI ---
 st.set_page_config(page_title="Prediksi Performa Nilai Siswa", page_icon="Graduation Cap", layout="wide")
-st.title("Prediksi Kelulusan Siswa")
+st.title("Prediksi Performa Nilai Siswa")
 st.markdown("Menggunakan 11 indikator utama berdasarkan **Akademik & Gaya Hidup** serta **Lingkungan & Psikologis**")
 st.markdown("""
 **Peringatan**:  
